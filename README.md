@@ -214,7 +214,6 @@ public class CircleGraphFormula extends PaintedGraphFormula {
             final float x = (float) Math.cos(angleR) * r;
             final float y = (float) Math.sin(angleR) * r;
 
-            //paint.setStyle(Paint.Style.STROKE);
             float r2 = r/5;
             paint.setStyle(Paint.Style.STROKE);
             canvas.drawArc(-r2,-r2,r2,r2,-angle,angle,true,paint);
