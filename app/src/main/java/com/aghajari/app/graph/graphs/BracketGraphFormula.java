@@ -41,11 +41,11 @@ public class BracketGraphFormula extends PaintedGraphFormula {
         float y1 = function(x - graphView.findFormulaX(AXGraphView.EPSILON));
         float y2 = function(x + graphView.findFormulaX(AXGraphView.EPSILON));
 
-        if (y != y2) {
+        if (y != y1) {
             return AXGraphPointType.EMPTY;
         }
 
-        if (y != y1) {
+        if (y != y2) {
             return AXGraphPointType.FILL;
         }
         return super.getPointType(x, y);
