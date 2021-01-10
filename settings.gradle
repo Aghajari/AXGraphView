@@ -1,0 +1,3 @@
+include ':AXGraphView'
+include ':app'
+rootProject.name = "SimpleGraph"
