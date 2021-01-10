@@ -26,7 +26,7 @@ public class GraphActivity extends AppCompatActivity {
         AdapterData.GraphInfo info = AdapterData.list.get(graphIndex);
         getSupportActionBar().setTitle(info.getName());
 
-        AXGraphView view = findViewById(R.id.graph_view);
+        view = findViewById(R.id.graph_view);
         view.addFormulas(info.getFormulas());
         view.setGraphOptions(info.getGraphActivityOptions());
         view.setBackgroundColor(Color.WHITE);
