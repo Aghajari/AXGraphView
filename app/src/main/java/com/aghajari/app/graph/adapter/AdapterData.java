@@ -1,14 +1,20 @@
 package com.aghajari.app.graph.adapter;
 
 import android.content.Context;
-import android.graphics.PointF;
+import android.graphics.Color;
 
 import com.aghajari.app.graph.graphs.AbsoluteValueGraphFormula;
 import com.aghajari.app.graph.graphs.BracketGraphFormula;
 import com.aghajari.app.graph.graphs.CircleGraphFormula;
 import com.aghajari.app.graph.graphs.CubicRootGraphFormula;
 import com.aghajari.app.graph.graphs.CubicRootX2GraphFormula;
+import com.aghajari.app.graph.multigraphs.BatmanGraphFormula;
+import com.aghajari.app.graph.multigraphs.CaptainAmericaGraphFormula;
+import com.aghajari.app.graph.multigraphs.FlashGraphFormula;
+import com.aghajari.app.graph.multigraphs.HeartGraphFormula;
 import com.aghajari.app.graph.graphs.CustomGraphFormula;
+import com.aghajari.app.graph.multigraphs.SupermanGraphFormula;
+import com.aghajari.app.graph.multigraphs.WonderWomanGraphFormula;
 import com.aghajari.app.graph.parser.GraphFormulaParser;
 import com.aghajari.graphview.AXGraphFormula;
 import com.aghajari.graphview.AXGraphOptions;
@@ -121,6 +127,36 @@ public class AdapterData {
                 createCircleOptions(context,true),
                 createCircleOptions(context,false),
                 new CircleGraphFormula(context,1, 60)));
+
+        list.add(new GraphInfo("Heart",
+                createMultiGraphOptions(context,true),
+                createMultiGraphOptions(context,false),
+                new HeartGraphFormula(context)));
+
+        list.add(new GraphInfo("The Flash",
+                createMultiGraphOptions(context,true),
+                createMultiGraphOptions(context,false),
+                new FlashGraphFormula(context)));
+
+        list.add(new GraphInfo("Captain America",
+                createMultiGraphOptions(context,true),
+                createMultiGraphOptions(context,false),
+                new CaptainAmericaGraphFormula(context)));
+
+        list.add(new GraphInfo("Batman",
+                createMultiGraphOptions(context,true),
+                createMultiGraphOptions(context,false),
+                new BatmanGraphFormula(context)));
+
+        list.add(new GraphInfo("Wonder Woman",
+                createMultiGraphOptions(context,true),
+                createMultiGraphOptions(context,false),
+                new WonderWomanGraphFormula(context)));
+
+        list.add(new GraphInfo("Superman",
+                createMultiGraphOptions(context,true),
+                createMultiGraphOptions(context,false),
+                new SupermanGraphFormula(context)));
     }
 
     private static AXGraphOptions createOptions(Context context, boolean mainActivity){
@@ -167,6 +203,22 @@ public class AdapterData {
             options.xLength *= 2;
             options.yLength *= 2;
         }*/
+        return options;
+    }
+
+    private static AXGraphOptions createMultiGraphOptions(Context context, boolean mainActivity){
+        AXGraphOptions options = new AXGraphOptions(context);
+        options.scrollEnabled = false;
+        options.xDividerIntervalInPx = 150;
+        options.yDividerIntervalInPx = 150;
+        options.maxZoom = 2.25f;
+        options.minZoom = 0.25f;
+        options.axisPaint.setColor(Color.GRAY);
+
+        if (mainActivity) {
+            options.xDividerInterval = 2f;
+            options.yDividerInterval = 2f;
+        }
         return options;
     }
 

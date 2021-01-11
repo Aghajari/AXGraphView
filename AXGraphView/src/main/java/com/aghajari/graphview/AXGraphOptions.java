@@ -115,10 +115,10 @@ public class AXGraphOptions {
 
     protected float calculateScaleEffect(float scale){
         this.lastGraphScale = scale;
-        float scaledDividerInterval = xDividerIntervalInPx * scale;
         float s = 1;
 
         if (scale>1) {
+            float scaledDividerInterval = xDividerIntervalInPx * scale;
             float c = 2;
             while (scaledDividerInterval / xDividerIntervalInPx >= c) {
                 scaledDividerInterval -= xDividerIntervalInPx;
@@ -126,9 +126,10 @@ public class AXGraphOptions {
                 c += 0.5f;
             }
         }else if (scale<1){
-            float c = 1.5f;
-            while (xDividerIntervalInPx / scaledDividerInterval >= c) {
-                scaledDividerInterval += xDividerIntervalInPx;
+            float scaledDividerInterval = xDividerIntervalInPx / scale;
+            float c = 2;
+            while (scaledDividerInterval / xDividerIntervalInPx >= c) {
+                scaledDividerInterval -= xDividerIntervalInPx;
                 s /= 2;
                 c += 0.5f;
             }

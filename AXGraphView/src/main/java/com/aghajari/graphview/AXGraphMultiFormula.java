@@ -18,10 +18,20 @@
 
 package com.aghajari.graphview;
 
-public enum AXGraphPointType {
-    CONTINUOUS,
-    FILL,
-    EMPTY,
-    CUSTOM,
-    SPECIAL
+public abstract class AXGraphMultiFormula extends AXGraphFormula{
+
+    protected float[] applyMultiFunction (float x){
+        float[] y = multiFunction(transformScaleX * (x + transformX));
+        for (int i = 0; i<y.length; i++){
+            y[i] = transformScaleY * (y[i]) + transformY;
+        }
+        return y;
+    }
+
+    public abstract float[] multiFunction(float x);
+
+    @Override
+    public float function(float x) {
+        return Float.POSITIVE_INFINITY; //undefined
+    }
 }

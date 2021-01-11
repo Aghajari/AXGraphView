@@ -45,7 +45,7 @@ import static com.aghajari.graphview.AXGraphOptions.DEFAULT;
 
 /**
  * @author Amir Hossein Aghajari
- * @version 1.0.0
+ * @version 1.0.2
  */
 public class AXGraphView extends View {
 
@@ -65,6 +65,7 @@ public class AXGraphView extends View {
     float dy, dx;
     float xDIPx, xDI, yDIPx, yDI;
     private List<CirclePoints> drawPoints = new ArrayList<>();
+    private List<Float> mainPoints = new ArrayList<>();
     float centerY, centerX;
     private RectF graphSize = new RectF();
 
@@ -189,7 +190,7 @@ public class AXGraphView extends View {
         paintsStrokeWidth[1] = options.dividerPaint.getStrokeWidth();
         paintsStrokeWidth[2] = options.gridLinePaint.getStrokeWidth();
         paintsStrokeWidth[3] = options.textPaint.getTextSize() / getContext().getResources().getDisplayMetrics().density;
-        invalidate();
+        onSizeChanged(getWidth(),getHeight(),0,0);
     }
 
     public AXGraphOptions getGraphOptions() {
@@ -221,6 +222,7 @@ public class AXGraphView extends View {
     }
 
     private void findAxisPosition() {
+        System.out.println(options.axis);
         //float x = options.axis == null || options.axis.x == DEFAULT ? getGraphWidth() / 2f : (getGraphWidth() / 2f) + options.axis.x;
         float x = options.axis == null || options.axis.x == DEFAULT ? (-graphSize.left) : (-graphSize.left) + options.axis.x;
         //float y = options.axis == null || options.axis.y == DEFAULT ? getGraphHeight() / 2f : (getGraphHeight() / 2f) + options.axis.y;
@@ -246,9 +248,11 @@ public class AXGraphView extends View {
     private PointF findContentSize(int w,int h){
         if (options==null) {
             graphSize.set(-w,-h,w,h);
+            findAxisDiff();
             return new PointF(w*2,h*2);
         }else if (!options.scrollEnabled) {
             graphSize.set(-w/2f,-h/2f,w/2f,h/2f);
+            findAxisDiff();
             return new PointF(w,h);
         }
 
@@ -267,7 +271,12 @@ public class AXGraphView extends View {
             graphSize.top = -h;
             graphSize.bottom = h;
         }
+        findAxisDiff();
 
+        return new PointF(graphSize.width(),graphSize.height());
+    }
+
+    private void findAxisDiff(){
         if (options.axis!=null && options.axis.x!=DEFAULT){
             float x_dif = findGraphX(options.axis.x * options.xDividerInterval / options.xDividerIntervalInPx);
             graphSize.left += x_dif;
@@ -279,8 +288,6 @@ public class AXGraphView extends View {
             graphSize.top += y_dif;
             graphSize.bottom += y_dif;
         }
-
-        return new PointF(graphSize.width(),graphSize.height());
     }
 
     @Override
@@ -318,12 +325,14 @@ public class AXGraphView extends View {
         float min_display_y = findFormulaY(((-dy)/graphScale) - centerY) - 0.5f;
         float max_display_y = findFormulaY((((-dy) + getHeight())/graphScale) - centerY) + 0.5f;
 
+        mainPoints.clear();
         if (options.drawAxisXDivider || options.drawGridXLines) {
             int xCount = (int) (centerX / xDIPx) * mdc;
             for (int i = 1; i <= xCount; i++) {
                 if (min_display_x > -i*xDI || -i*xDI > max_display_x) continue;
 
                 float xSelection = i * xDIPx;
+                mainPoints.add(-i*xDI);
 
                 if (options.drawGridXLines)
                     canvas.drawLine(centerX - xSelection, Integer.MIN_VALUE,
@@ -342,6 +351,8 @@ public class AXGraphView extends View {
                 if (min_display_x > i*xDI  || i*xDI  > max_display_x) continue;
 
                 float xSelection = i * xDIPx;
+                mainPoints.add(i*xDI);
+
                 if (options.drawGridXLines)
                     canvas.drawLine(centerX + xSelection, Integer.MIN_VALUE,
                             centerX + xSelection, Integer.MAX_VALUE, options.gridLinePaint);
@@ -424,25 +435,23 @@ public class AXGraphView extends View {
         for (AXGraphFormula formula : getFormulas()) {
             if (!formula.isEnabled()) continue;
             formula.getGraphPaint().setStrokeWidth(formula.getStrokeWidth() / graphScale);
-            graphCanvas.setCanvas(canvas, formula.getGraphPaint());
+            graphCanvas.setCanvas(canvas, formula);
             formula.onAttachedToView(this);
 
-
             if (!formula.onDraw(graphCanvas)) {
+                graphCanvas.setApplyFormulaTransform(false);
+
                 for (float rx = 0; rx <= getWidth() / graphScale; rx += formula.sensitive()) {
                     final float x = (dx + (rx * graphScale)) / graphScale;
                     final float xInAxis = x - centerX;
                     final float fx = AXGraphUtils.round(findFormulaX(xInAxis), 3);
-                    final float fy = formula.function(fx);
-                    //if (min_display_y > -fy || -fy > max_display_y) continue;
-
-                    if (fy == Float.POSITIVE_INFINITY || fy == Float.NEGATIVE_INFINITY) continue;
-                    final float fy2 = formula.function(fx + X_EPSILON);
-                    if (fy2 == Float.POSITIVE_INFINITY || fy2 == Float.NEGATIVE_INFINITY) continue;
 
                     if (!formula.isInDomain(fx)) {
                         final float x1 = fx + X_EPSILON;
                         final float x2 = fx - X_EPSILON;
+                        final float fy = formula.function(fx);
+
+                        if (fy == Float.POSITIVE_INFINITY || fy == Float.NEGATIVE_INFINITY) continue;
                         if (formula.isInDomain(x1) && Math.abs(fy - formula.function(x1)) <= X_EPSILON) {
                             drawPoints.add(new CirclePoints(fy, fx, AXGraphPointType.EMPTY));
                         }
@@ -452,13 +461,11 @@ public class AXGraphView extends View {
                         continue;
                     }
 
-                    if (Math.abs(findCanvasY(fy) - findCanvasY(fy2)) > getHeight()) continue;
-
-                    AXGraphPointType pointType = formula.getPointType(fx, fy);
-                    if (pointType == AXGraphPointType.CONTINUOUS) {
-                        graphCanvas.drawLine(fx, fy, fx + X_EPSILON, fy2);
-                    } else {
-                        drawPoints.add(new CirclePoints(fy, fx, pointType));
+                    drawFormula(formula,fx,X_EPSILON);
+                }
+                for (float mainFX : mainPoints){
+                    if (formula.isInDomain(mainFX)) {
+                        drawFormula(formula,mainFX,X_EPSILON);
                     }
                 }
             }
@@ -472,6 +479,40 @@ public class AXGraphView extends View {
                 }
             }
             drawPoints.clear();
+        }
+    }
+
+    protected void drawFormula (AXGraphFormula formula,float fx,float X_EPSILON){
+        //if (min_display_y > -fy || -fy > max_display_y) continue;
+        if (formula instanceof AXGraphMultiFormula){
+            float[] fy1 = ((AXGraphMultiFormula) formula).applyMultiFunction(fx);
+            float[] fy2 = ((AXGraphMultiFormula) formula).applyMultiFunction(fx + X_EPSILON);
+            for (int fIndex = 0;fIndex<fy1.length;fIndex++){
+                if (fy2.length<=fIndex) break;
+
+                if (Math.abs(findCanvasY(fy1[fIndex]) - findCanvasY(fy2[fIndex])) > getHeight()) continue;
+                if (fy1[fIndex] == Float.POSITIVE_INFINITY || fy1[fIndex] == Float.NEGATIVE_INFINITY) continue;
+                if (fy2[fIndex] == Float.POSITIVE_INFINITY || fy2[fIndex] == Float.NEGATIVE_INFINITY) continue;
+                drawFunction(formula,fx,fy1[fIndex],fy2[fIndex],X_EPSILON);
+            }
+        } else {
+            final float fy = formula.applyFunction(fx);
+
+            if (fy == Float.POSITIVE_INFINITY || fy == Float.NEGATIVE_INFINITY) return;
+            final float fy2 = formula.applyFunction(fx + X_EPSILON);
+            if (fy2 == Float.POSITIVE_INFINITY || fy2 == Float.NEGATIVE_INFINITY) return;
+            if (Math.abs(findCanvasY(fy) - findCanvasY(fy2)) > getHeight()) return;
+
+            drawFunction(formula,fx,fy,fy2,X_EPSILON);
+        }
+    }
+
+    protected void drawFunction(AXGraphFormula formula,float fx,float fy,float fy2,float X_EPSILON){
+        AXGraphPointType pointType = formula.getPointType(fx, fy);
+        if (pointType == AXGraphPointType.CONTINUOUS) {
+            graphCanvas.drawLine(fx, fy, fx + X_EPSILON, fy2);
+        } else {
+            drawPoints.add(new CirclePoints(fy, fx, pointType));
         }
     }
 
@@ -555,7 +596,7 @@ public class AXGraphView extends View {
         matrix.getValues(values);
         float sx = values[Matrix.MSCALE_X] * scale;
         float sy = values[Matrix.MSCALE_Y] * scale;
-        return sx > options.minZoom && sx < options.maxZoom && sy > options.minZoom && sy < options.maxZoom;
+        return sx >= options.minZoom && sx <= options.maxZoom && sy >= options.minZoom && sy <= options.maxZoom;
     }
 
     private void setupTranslation(float dX, float dY) {

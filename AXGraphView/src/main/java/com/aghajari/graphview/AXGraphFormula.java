@@ -143,6 +143,7 @@ public abstract class AXGraphFormula {
         switch (type){
             case CONTINUOUS:
                 break;
+            case SPECIAL:
             case CUSTOM:
             case FILL:
                 getPointPaint().setStyle(Paint.Style.FILL);
@@ -156,5 +157,38 @@ public abstract class AXGraphFormula {
 
     protected boolean onDraw (AXGraphCanvas canvas){
         return false; // continue drawing function by AXGraphView
+    }
+
+    float transformX = 0 ,transformY = 0;
+    float transformScaleX = 1f,transformScaleY = 1f;
+
+    public float getTransformScaleX() {
+        return 1/transformScaleX;
+    }
+
+    public float getTransformScaleY() {
+        return transformScaleY;
+    }
+
+    public float getTransformX() {
+        return -transformX;
+    }
+
+    public float getTransformY() {
+        return transformY;
+    }
+
+    public void applyTransformMove(float x,float y){
+        this.transformY = y;
+        this.transformX = -x;
+    }
+
+    public void applyTransformScale (float x,float y){
+        this.transformScaleY = y;
+        this.transformScaleX = 1/x;
+    }
+
+    protected float applyFunction (float x){
+        return transformScaleY * (function(transformScaleX * (x + transformX))) + transformY;
     }
 }

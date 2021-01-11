@@ -30,14 +30,18 @@ public class AXGraphCanvas {
     private AXGraphView graphView;
     private Paint defaultPaint;
     private boolean radiusFromAxis = false;
+    private boolean applyTransform = false;
+    private AXGraphFormula formula;
 
     AXGraphCanvas(AXGraphView graphView){
         this.graphView = graphView;
     }
 
-    void setCanvas (Canvas canvas,Paint defaultPaint){
+    void setCanvas (Canvas canvas,AXGraphFormula formula){
         this.canvas = canvas;
-        this.defaultPaint = defaultPaint;
+        this.defaultPaint = formula.getGraphPaint();
+        this.formula = formula;
+        this.applyTransform = false;
     }
 
     public AXGraphView getGraphView() {
@@ -56,28 +60,50 @@ public class AXGraphCanvas {
         this.radiusFromAxis = radiusFromAxis;
     }
 
+    public void setApplyFormulaTransform(boolean applyTransform) {
+        this.applyTransform = applyTransform;
+    }
+
     public float findFormulaX(float rx) {
-        return graphView.findFormulaX(rx);
+        if (applyTransform)
+            return formula.getTransformScaleX() * (graphView.findFormulaX(rx) + + formula.getTransformX());
+        else
+            return graphView.findFormulaX(rx);
     }
 
     public float findFormulaY(float ry) {
-        return graphView.findFormulaY(ry);
+        if (applyTransform)
+            return formula.getTransformScaleY() * graphView.findFormulaY(ry) + formula.getTransformY();
+        else
+            return graphView.findFormulaY(ry);
     }
 
     public float findGraphX(float fx) {
-        return graphView.findGraphX(fx);
+        if (applyTransform)
+            return graphView.findGraphX(formula.getTransformScaleX() * (fx+formula.getTransformX()));
+        else
+            return graphView.findGraphX(fx);
     }
 
     public float findGraphY(float fy) {
-        return graphView.findGraphY(fy);
+        if (applyTransform)
+            return graphView.findGraphY(formula.getTransformScaleY() * fy +formula.getTransformY());
+        else
+            return graphView.findGraphY(fy);
     }
 
     public float findCanvasX(float fx) {
-        return graphView.findCanvasX(fx);
+        if (applyTransform)
+            return graphView.findCanvasX(formula.getTransformScaleX() * (fx+formula.getTransformX()));
+        else
+            return graphView.findCanvasX(fx);
     }
 
     public float findCanvasY(float fy) {
-        return graphView.findCanvasY(fy);
+        if (applyTransform)
+            return graphView.findCanvasY(formula.getTransformScaleY() * fy + formula.getTransformY());
+        else
+            return graphView.findCanvasY(fy);
     }
 
     public float getGraphScale() {
@@ -119,6 +145,18 @@ public class AXGraphCanvas {
             p.setStrokeWidth(saveStrokeWidth);
         }
         p.setColor(saveColor);
+        p.setStyle(saveStyle);
+    }
+
+    public void drawBorderCircle(float cx, float cy, float radius, float borderWidth, Paint p) {
+        Paint.Style saveStyle = p.getStyle();
+        if (borderWidth > 0) {
+            p.setStyle(Paint.Style.STROKE);
+            float saveStrokeWidth = p.getStrokeWidth();
+            p.setStrokeWidth(borderWidth);
+            canvas.drawCircle(findCanvasX(cx), findCanvasY(cy), (radiusFromAxis?findGraphX(radius):radius) - (borderWidth / 2), p);
+            p.setStrokeWidth(saveStrokeWidth);
+        }
         p.setStyle(saveStyle);
     }
 

@@ -1,6 +1,6 @@
 siteUrl = https://github.com/Aghajari/AXGraphView
 gitUrl = https://github.com/Aghajari/AXGraphView.git
-version = 1.0.0
+version = 1.0.2
 groupId = com.aghajari.graphview
 licenses = ['Apache-2.0']
 id = AXGraphView
