@@ -4,9 +4,11 @@
  **AXGraphView** creates zoomable and scrollable graphs.
 
 ## Screenshot
-<img src="./images/screen1.png" width=200 title="Screen"> <img src="./images/screen2.png" width=200 title="Screen"> <img src="./images/screen3.png" width=200 title="Screen"> 
 
-<img src="./images/screen4.png" width=200 title="Screen"> <img src="./images/screen5.png" width=200 title="Screen"> <img src="./images/screen6.png" width=200 title="Screen">
+<div align="center">
+<img src="./images/1.jpg" title="Screen">
+<img src="./images/2.jpg" title="Screen">
+</div>
 
 ## Preview (GIF)
 <img src="./images/AXGraphView.gif" width=300 title="Preview">
@@ -18,8 +20,11 @@
 - [Graph Axis](#graph-axis)
 - [Domain of Graph](#domain-of-graph)
 - [Custom Points](#custom-points)
+- [Transform](#transform)
+- [MultiFormula](#multiformula)
 - [Custom Draw](#custom-draw)
 - [Famous Graphs](#famous-graphs)
+- [Multi Formula Graphs](#multi-formula-graphs)
 - [Author](#author)
 - [License](#license)
 
@@ -28,7 +33,7 @@ AXGraphView is available in the JCenter, so you just need to add it as a depende
 
 Gradle
 ```gradle
-implementation 'com.aghajari.graphview:AXGraphView:1.0.0'
+implementation 'com.aghajari.graphview:AXGraphView:1.0.2'
 ```
 
 Maven
@@ -36,7 +41,7 @@ Maven
 <dependency>
   <groupId>com.aghajari.graphview</groupId>
   <artifactId>AXGraphView</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.2</version>
   <type>pom</type>
 </dependency>
 ```
@@ -172,6 +177,42 @@ graphView.addFormula(new AXGraphFormula() { // Sin(x)
 });
 ```
 
+## Transform
+You can move(x&y) or change scale(x&y) of the function on graph!
+
+```java
+formula.applyTransformMove(3f,2.5f);
+formula.applyTransformScale(1.5f,1.5f);
+```
+
+## MultiFormula
+You can also draw multi functions together.
+
+```java
+public class HeartGraphFormula extends AXGraphMultiFormula {
+
+@Override
+    public float[] multiFunction(float x) {
+        return new float[] {
+                function1(x),
+                function2(x)
+        };
+    }
+
+    public float function1(float x) {
+        return (float) Math.sqrt(1 - Math.pow(Math.abs(x) - 1,2));
+    }
+
+    public float function2(float x) {
+        return (float) (Math.acos(1 - Math.abs(x)) - Math.PI);
+    }
+}
+```
+
+Output :
+
+<img src="./images/graphs2/screen_heart.png" width=250 title="Heart">
+
 ## Custom Draw
 You can draw custom shapes using AXGraphCanvas (by graph x,y) :
 
@@ -268,6 +309,17 @@ public class CircleGraphFormula extends PaintedGraphFormula {
 |Tangent|tan(x)|<img src="./images/graphs/tan.png" height=150 title="Graph">|
 |Cotangent|cot(x)|<img src="./images/graphs/cot.png" height=150 title="Graph">|
 |Tangent And Cotangent|tan(x) , cot(x)|<img src="./images/graphs/tan_and_cot.png" height=150 title="Graph">|
+
+## Multi Formula Graphs
+
+|Name|AXGraphView|
+| :----: | :----: |
+|Heart|<img src="./images/graphs2/heart.png" height=150 title="Graph">|
+|Captain America|<img src="./images/graphs2/captain_america.png" height=150 title="Graph">|
+|Superman|<img src="./images/graphs2/superman.png" height=150 title="Graph">|
+|Batman|<img src="./images/graphs2/batman.png" height=150 title="Graph">|
+|The Flash|<img src="./images/graphs2/flash.png" height=150 title="Graph">|
+|Wonder Woman|<img src="./images/graphs2/wonder_woman.png" height=150 title="Graph">|
 
 ## Author 
 - **Amir Hossein Aghajari**
