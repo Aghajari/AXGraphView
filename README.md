@@ -218,7 +218,10 @@ You can draw custom shapes using AXGraphCanvas (by graph x,y) :
 
 ![Image](./images/custom_draw.png)
 
-``` java
+<details><summary><b>CircleGraphFormula (click to expand)</b></summary>
+<p>
+  
+````java
 public class CircleGraphFormula extends PaintedGraphFormula {
 
     private float r;
@@ -285,7 +288,8 @@ public class CircleGraphFormula extends PaintedGraphFormula {
         return Float.POSITIVE_INFINITY; //undefined
     }
 }
-```
+````
+</p></details>
 
 ## Famous Graphs
 
