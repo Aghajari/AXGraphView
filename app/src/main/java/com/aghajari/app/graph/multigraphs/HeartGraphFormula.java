@@ -1,8 +1,10 @@
 package com.aghajari.app.graph.multigraphs;
 
 import android.content.Context;
+import android.view.Gravity;
 
 import com.aghajari.app.graph.adapter.PaintedGraphMultiFormula;
+import com.aghajari.graphview.AXGraphCanvas;
 
 public class HeartGraphFormula extends PaintedGraphMultiFormula {
 
@@ -32,4 +34,5 @@ public class HeartGraphFormula extends PaintedGraphMultiFormula {
     protected float sensitive() {
         return super.sensitive()/4f;
     }
+
 }

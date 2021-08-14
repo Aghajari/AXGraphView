@@ -45,7 +45,7 @@ import static com.aghajari.graphview.AXGraphOptions.DEFAULT;
 
 /**
  * @author Amir Hossein Aghajari
- * @version 1.0.2
+ * @version 1.1.0
  */
 public class AXGraphView extends View {
 
@@ -222,7 +222,6 @@ public class AXGraphView extends View {
     }
 
     private void findAxisPosition() {
-        System.out.println(options.axis);
         //float x = options.axis == null || options.axis.x == DEFAULT ? getGraphWidth() / 2f : (getGraphWidth() / 2f) + options.axis.x;
         float x = options.axis == null || options.axis.x == DEFAULT ? (-graphSize.left) : (-graphSize.left) + options.axis.x;
         //float y = options.axis == null || options.axis.y == DEFAULT ? getGraphHeight() / 2f : (getGraphHeight() / 2f) + options.axis.y;

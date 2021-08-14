@@ -29,7 +29,7 @@ public class AdapterData {
 
     public static void init(Context context){
         list = new ArrayList<>();
-
+  
         list.add(new GraphInfo("Quadratic (x^2)",
                 createOptions(context,true),
                 createOptions(context,false),
@@ -45,6 +45,12 @@ public class AdapterData {
                 createOptions(context,false),
                 new GraphFormulaParser(context,"(x)^3"),
                 new GraphFormulaParser(context,"(x)^2", R.color.colorPrimary,0f,1f)));
+
+        list.add(new GraphInfo("x^2 And (x^2)^-1",
+                createOptions(context,true),
+                createOptions(context,false),
+                new GraphFormulaParser(context,"(x)^2"),
+                new GraphFormulaParser(context,"sqrt(x)", R.color.colorPrimary,0f,1f)));
 
         list.add(new GraphInfo("Homographic (1/x)",
                 createCustomOptions(context,true),

@@ -2,6 +2,8 @@ package com.aghajari.app.graph;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.AppCompatButton;
+import androidx.appcompat.widget.AppCompatEditText;
 import androidx.appcompat.widget.AppCompatTextView;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -69,9 +71,12 @@ public class MainActivity extends AppCompatActivity {
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
-                if (itemView instanceof TextView) return;
                 view = itemView.findViewById(R.id.graph_view);
                 name = itemView.findViewById(R.id.graph_name);
+            }
+
+            public ViewHolder(@NonNull TextView itemView) {
+                super(itemView);
             }
 
             public void bind(final int index){

@@ -22,7 +22,7 @@ public class GraphActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_graph);
 
-        int graphIndex = getIntent().getIntExtra("graph",0);
+        int graphIndex = getIntent().getIntExtra("graph", 0);
         AdapterData.GraphInfo info = AdapterData.list.get(graphIndex);
         getSupportActionBar().setTitle(info.getName());
 
